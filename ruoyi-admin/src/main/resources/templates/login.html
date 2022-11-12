@@ -4,8 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-<!--    <title>登录闲鹿工作流 v[[${version}]]</title>
-    <meta name="description" content="若依后台管理框架,闲鹿工作流">-->
     <title>系统演示</title>
     <meta name="description" content="后台管理框架,工作流">
     <link href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
@@ -36,34 +34,15 @@
         <div class="row">
             <div class="col-sm-5">
                 <div class="signin-info">
-                   <!-- <div class="logopanel m-b">
-                        <h1><img alt="[ 若依 ]" src="../static/ruoyi.png" th:src="@{/ruoyi.png}"></h1>
-                    </div>
-                    <div class="m-b"></div>-->
                     <h4>欢迎使用 <strong>流程处理演示系统 </strong></h4>
-                    <!--<ul class="m-b">
-                        <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> Activiti 6.x</li>
-                        <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> SpringBoot 2.x</li>
-                        <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> Thymeleaf 3.x</li>
-                        <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> Bootstrap 3.x</li>
-                    </ul>
-                    <div style="color: black;">
-                        <h4>流程用户和用户组 (密码均为 123456)：</h4>
-                        <ol>
-                            <li>普通员工：chengxy 程序猿</li>
-                            <li>部门领导：axianlu 一只闲鹿</li>
-                            <li>人事：    rensm  人事喵</li>
-                        </ol>
-                        <h4>p.s. 流程管理请使用 admin 账号维护</h4>
-                    </div>-->
                 </div>
             </div>
             <div class="col-sm-5">
                 <form id="signupForm">
                     <h4 class="no-margins">登录：</h4>
-                    <!--<p class="m-t-md">你若不离不弃，我必生死相依</p>-->
-                    <input type="text"     name="username" class="form-control uname"     placeholder="用户名" value="admin"    />
-                    <input type="password" name="password" class="form-control pword"     placeholder="密码"   value="admin123" />
+
+                    <input type="text"     name="username" class="form-control uname"     placeholder="用户名" />
+                    <input type="password" name="password" class="form-control pword"     placeholder="密码" />
 					<div class="row m-t" th:if="${captchaEnabled==true}">
 						<div class="col-xs-6">
 						    <input type="text" name="validateCode" class="form-control code" placeholder="验证码" maxlength="5" autocomplete="off">
@@ -82,9 +61,6 @@
             </div>
         </div>
         <div class="signup-footer">
-            <!--<div class="pull-left">
-                &copy; 2019 All Rights Reserved. RuoYi, made with <a href="https://gitee.com/calvinhwang123/RuoYi-Process" target="_blank">一只闲鹿 🦌</a>.<br>
-            </div>-->
             <div class="pull-left">
                 &copy; 2020 All Rights Reserved. made with zmg.<br>
             </div>
