@@ -6,6 +6,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.exception.BusinessException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.activiti.domain.HistoricActivity;
 import com.ruoyi.activiti.service.IProcessService;
@@ -129,7 +130,7 @@ public class ProcessController extends BaseController {
      * 获取流程图像，已执行节点和流程线高亮显示
      */
     public void getActivitiProccessImage(String pProcessInstanceId, HttpServletResponse response) {
-        //logger.info("[开始]-获取流程图图像");
+        logger.info("[开始]-获取流程图图像");
         try {
             //  获取历史流程实例
             HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
@@ -147,14 +148,16 @@ public class ProcessController extends BaseController {
                 List<HistoricActivityInstance> historicActivityInstanceList = historyService.createHistoricActivityInstanceQuery()
                         .processInstanceId(pProcessInstanceId).orderByHistoricActivityInstanceId().asc().list();
 
+                logger.info("获取流程历史中已执行节点，并按照节点在流程中执行先后顺序排序", historicActivityInstanceList);
+
                 // 已执行的节点ID集合
                 List<String> executedActivityIdList = new ArrayList<String>();
                 int index = 1;
-                //logger.info("获取已经执行的节点ID");
+                logger.info("获取已经执行的节点ID");
                 for (HistoricActivityInstance activityInstance : historicActivityInstanceList) {
                     executedActivityIdList.add(activityInstance.getActivityId());
 
-                    //logger.info("第[" + index + "]个已执行节点=" + activityInstance.getActivityId() + " : " +activityInstance.getActivityName());
+                    logger.info("第[" + index + "]个已执行节点=" + activityInstance.getActivityId() + " : " +activityInstance.getActivityName());
                     index++;
                 }
 
@@ -187,11 +190,11 @@ public class ProcessController extends BaseController {
                 os.close();
                 imageStream.close();
             }
-            //logger.info("[完成]-获取流程图图像");
+            logger.info("[完成]-获取流程图图像");
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            //logger.error("【异常】-获取流程图失败！" + e.getMessage());
-            //throw new BusinessException("获取流程图失败！" + e.getMessage());
+            logger.error("【异常】-获取流程图失败！" + e.getMessage());
+            throw new BusinessException("获取流程图失败！" + e.getMessage());
         }
     }
 
