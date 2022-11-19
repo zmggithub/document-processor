@@ -1,28 +1,47 @@
 package com.ruoyi.activiti.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.activiti.service.IProcessService;
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.config.Global;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.file.FileUploadUtils;
+import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.activiti.domain.BizLeaveVo;
 import com.ruoyi.activiti.service.IBizLeaveService;
 import com.ruoyi.system.domain.SysUser;
+import org.activiti.bpmn.converter.BpmnXMLConverter;
+import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.editor.language.json.converter.BpmnJsonConverter;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.repository.Model;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,6 +55,7 @@ import java.util.List;
 @RequestMapping("/leave")
 public class BizLeaveController extends BaseController {
     private String prefix = "leave";
+    private static final Logger log = LoggerFactory.getLogger(BizLeaveController.class);
 
     @Autowired
     private IBizLeaveService bizLeaveService;
@@ -234,4 +254,63 @@ public class BizLeaveController extends BaseController {
         return getDataTable(list);
     }
 
+
+
+    /**
+     * 上传附件
+     */
+    @Log(title = "上传附件")
+    @PostMapping( "/upload")
+    @ResponseBody
+    public AjaxResult upload(@RequestParam("leaveUploadAccessory") MultipartFile file) {
+        try {
+            if (!file.isEmpty()) {
+                // String extensionName = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
+                // if (!"bpmn".equalsIgnoreCase(extensionName)
+                //         && !"zip".equalsIgnoreCase(extensionName)
+                //         && !"bar".equalsIgnoreCase(extensionName)) {
+                //     return error("流程定义文件仅支持 bpmn, zip 和 bar 格式！");
+                // }
+                // p.s. 此时 FileUploadUtils.upload() 返回字符串 fileName 前缀为 Constants.RESOURCE_PREFIX，需剔除
+                // 详见: FileUploadUtils.getPathFileName(...)
+                String fileName = FileUploadUtils.upload(Global.getProfile() + "/leaveUploadAccessory", file);
+                if (StringUtils.isNotBlank(fileName)) {
+                    String realFilePath = Global.getProfile() + fileName.substring(Constants.RESOURCE_PREFIX.length());
+                    return success(realFilePath);
+                }
+            }
+            return error("不允许上传空文件！");
+        }
+        catch (Exception e) {
+            log.error("上传流程定义文件失败！", e);
+            return error(e.getMessage());
+        }
+    }
+
+    /**
+     * 导出model的xml文件
+     */
+    @RequestMapping(value = "/export/{id}")
+    public void export(@PathVariable("id") Long id, HttpServletResponse response, HttpServletRequest request) {
+        try {
+            BizLeaveVo bizLeaveVo = bizLeaveService.selectBizLeaveById(id);
+
+
+            String filePath = bizLeaveVo.getFilePath();
+
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("multipart/form-data");
+            response.setHeader("Content-Disposition",
+                    "attachment;fileName=" + FileUtils.setFileDownloadHeader(request, bizLeaveVo.getFileName()));
+            FileUtils.writeBytes(filePath, response.getOutputStream());
+
+        } catch (Exception e) {
+            log.error("导出model的xml文件失败：id={}", id, e);
+            try {
+                response.sendError(500 , "文件失败下载失败");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
 }

@@ -3,6 +3,7 @@
 <head>
     <th:block th:include="include :: header('新增请假申请')" />
     <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: jasny-bootstrap-css" />
 </head>
 <body class="white-bg">
     <div class="wrapper wrapper-content animated fadeInRight ibox-content">
@@ -52,10 +53,30 @@
                     <input name="totalTimeText" class="form-control" type="text" readonly>
                 </div>
             </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">上传流程附件：</label>
+                <div class="col-sm-8">
+                    <div id="leaveUploadAccessoryDiv" class="fileinput fileinput-new" data-provides="fileinput" style="margin-bottom: 0; margin-right: -3px;">
+
+                        <span class="btn btn-success btn-file" style="font-size: 12px;">
+                            <span><i class="fa fa-upload"></i>点击按钮上传</span>
+                            <input type="file" name="leaveUploadAccessory" multiple>
+                            <input name="fileName" class="form-control" type="text" style="display: none;">
+                            <input name="filePath" class="form-control" type="text" style="display: none;">
+                        </span>
+                        <span class="fileinput-filename"></span>
+                    <!--    <a href="#" class="close fileinput-exists" data-dismiss="fileinput" style="float: none">&times;</a>-->
+                    </div>
+                </div>
+            </div>
+
+
         </form>
     </div>
     <th:block th:include="include :: footer" />
     <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: jasny-bootstrap-js" />
     <script th:src="@{/js/activiti.js}"></script>
     <script th:inline="javascript">
         var prefix = ctx + "leave"
@@ -99,6 +120,27 @@
             }
             return true;
         }
+
+
+        $('#leaveUploadAccessoryDiv').on('change.bs.fileinput', function (e) {
+            // 处理自己的业务
+            var formdata = new FormData();
+            var file = $('input[type=file]')[0].files[0];
+            $('input[name="fileName"]').val(file.name);
+            formdata.append("leaveUploadAccessory", file);
+            $.ajax({
+                url: prefix + '/upload',
+                data: formdata,
+                type: "post",
+                processData: false,
+                contentType: false,
+                success: function(result) {
+                    console.log(result);
+                    $('input[name="filePath"]').val(result.msg);
+                }
+            })
+        });
+
     </script>
 </body>
 </html>

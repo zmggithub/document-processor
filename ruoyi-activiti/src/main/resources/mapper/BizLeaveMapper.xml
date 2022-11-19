@@ -19,10 +19,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
         <result property="applyUser"    column="apply_user"    />
         <result property="applyTime"    column="apply_time"    />
+        <result property="fileName"    column="file_name"    />
+        <result property="filePath"    column="file_path"    />
     </resultMap>
 
     <sql id="selectBizLeaveVo">
-        select id, type, title, reason, start_time, end_time, total_time, instance_id, create_by, create_time, update_by, update_time, apply_user, apply_time from biz_leave
+        select id, type, title, reason, start_time, end_time, total_time, instance_id, create_by, create_time, update_by, update_time, apply_user, apply_time, file_name, file_path from biz_leave
     </sql>
 
     <select id="selectBizLeaveList" parameterType="BizLeaveVo" resultMap="BizLeaveResult">
@@ -64,6 +66,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null ">create_time,</if>
             <if test="updateBy != null  and updateBy != ''">update_by,</if>
             <if test="updateTime != null ">update_time,</if>
+            <if test="fileName != null ">file_name,</if>
+            <if test="filePath != null ">file_path,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="type != null  and type != ''">#{type},</if>
@@ -77,6 +81,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null ">#{createTime},</if>
             <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
             <if test="updateTime != null ">#{updateTime},</if>
+            <if test="fileName != null ">#{fileName},</if>
+            <if test="filePath != null ">#{filePath},</if>
          </trim>
     </insert>
 
