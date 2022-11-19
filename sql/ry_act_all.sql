@@ -1981,3 +1981,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- ----------------------------
 DROP VIEW IF EXISTS `ACT_ID_USER`;
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `ACT_ID_USER` AS select `u`.`login_name` AS `ID_`,0 AS `REV_`,`u`.`user_name` AS `FIRST_`,'' AS `LAST_`,`u`.`email` AS `EMAIL_`,`u`.`password` AS `PWD_`,'' AS `PICTURE_ID_` from `sys_user` `u` ;
+
+-- 2022-11-19
+-- ALTER TABLE
+ALTER TABLE `ry`.`biz_leave` ADD COLUMN `file_name` VARCHAR(64) NULL COMMENT '附件名称' AFTER `reality_end_time`, ADD COLUMN `file_path` VARCHAR(512) NULL COMMENT '附件路径' AFTER `file_name`;
