@@ -137,6 +137,10 @@ public class BizLeaveServiceImpl implements IBizLeaveService {
     public int insertBizLeave(BizLeaveVo bizLeave) {
         bizLeave.setCreateBy(ShiroUtils.getLoginName());
         bizLeave.setCreateTime(DateUtils.getNowDate());
+        if (StringUtils.isBlank(bizLeave.getFilePath())) {
+            bizLeave.setFilePath("无");
+            bizLeave.setFileName("无");
+        }
         return bizLeaveMapper.insertBizLeave(bizLeave);
     }
 

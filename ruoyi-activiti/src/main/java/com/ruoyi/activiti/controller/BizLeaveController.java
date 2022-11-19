@@ -265,12 +265,16 @@ public class BizLeaveController extends BaseController {
     public AjaxResult upload(@RequestParam("leaveUploadAccessory") MultipartFile file) {
         try {
             if (!file.isEmpty()) {
-                // String extensionName = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
-                // if (!"bpmn".equalsIgnoreCase(extensionName)
-                //         && !"zip".equalsIgnoreCase(extensionName)
-                //         && !"bar".equalsIgnoreCase(extensionName)) {
-                //     return error("流程定义文件仅支持 bpmn, zip 和 bar 格式！");
-                // }
+                String extensionName = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
+                if (!"txt".equalsIgnoreCase(extensionName)
+                        && !"zip".equalsIgnoreCase(extensionName)
+                        && !"docx".equalsIgnoreCase(extensionName)
+                        && !"doc".equalsIgnoreCase(extensionName)
+                        && !"xls".equalsIgnoreCase(extensionName)
+                        && !"xlsx".equalsIgnoreCase(extensionName)) {
+                    return error("文件仅支持 xls, xlsx, doc, docx, zip, txt 格式！");
+                }
+
                 // p.s. 此时 FileUploadUtils.upload() 返回字符串 fileName 前缀为 Constants.RESOURCE_PREFIX，需剔除
                 // 详见: FileUploadUtils.getPathFileName(...)
                 String fileName = FileUploadUtils.upload(Global.getProfile() + "/leaveUploadAccessory", file);
@@ -295,8 +299,12 @@ public class BizLeaveController extends BaseController {
         try {
             BizLeaveVo bizLeaveVo = bizLeaveService.selectBizLeaveById(id);
 
-
             String filePath = bizLeaveVo.getFilePath();
+
+            if ("无".equals(filePath)) {
+                response.sendError(500 , "没有附件");
+                return;
+            }
 
             response.setCharacterEncoding("utf-8");
             response.setContentType("multipart/form-data");

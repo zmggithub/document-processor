@@ -126,7 +126,13 @@
             // 处理自己的业务
             var formdata = new FormData();
             var file = $('input[type=file]')[0].files[0];
-            $('input[name="fileName"]').val(file.name);
+
+            if (1024 * 1024 < file.size) {
+                $.modal.msgError("仅支持上传大小为1M的文件！");
+                $('#leaveUploadAccessoryDiv').fileinput('reset');
+                return;
+            }
+
             formdata.append("leaveUploadAccessory", file);
             $.ajax({
                 url: prefix + '/upload',
@@ -135,7 +141,12 @@
                 processData: false,
                 contentType: false,
                 success: function(result) {
-                    console.log(result);
+                    if (0 !== result.code) {
+                        $.modal.msgError(result.msg);
+                        $('#leaveUploadAccessoryDiv').fileinput('reset');
+                        return;
+                    }
+                    $('input[name="fileName"]').val(file.name);
                     $('input[name="filePath"]').val(result.msg);
                 }
             })
